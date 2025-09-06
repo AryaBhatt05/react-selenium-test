@@ -1,68 +1,59 @@
 pipeline {
-    agent any
+    agent any  // run on any available Jenkins node
 
     environment {
-        NODE_HOME = "C:\\Program Files\\nodejs" // Update if your Node.js path is different
-        PATH = "${env.NODE_HOME};${env.PATH}"
+        NODE_ENV = 'development'
     }
 
     stages {
         stage('Checkout') {
             steps {
-                node {
-                    checkout scm
-                }
+                checkout scm
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                node {
-                    // Clean npm cache just in case
-                    bat 'npm cache clean --force'
-                    bat 'npm install'
+                script {
+                    if (fileExists('package-lock.json')) {
+                        bat 'npm ci'
+                    } else {
+                        bat 'npm install'
+                    }
                 }
             }
         }
 
-        stage('Build Project') {
+        stage('Run Tests') {
             steps {
-                node {
-                    bat 'npm run build'
+                bat 'npm test'
+            }
+            post {
+                always {
+                    junit 'reports/**/*.xml' // adjust path if your test reports are elsewhere
                 }
             }
         }
 
-        stage('Run Selenium Tests') {
+        stage('Build') {
             steps {
-                node {
-                    bat 'npm test' // Assuming you have a test script in package.json
-                }
+                bat 'npm run build'
             }
         }
 
-        stage('Publish Test Results') {
+        stage('Archive Artifacts') {
             steps {
-                node {
-                    // Adjust the path if your test results are elsewhere
-                    junit '**/test-results/*.xml'
-                }
+                archiveArtifacts artifacts: 'build/**', fingerprint: true
             }
         }
     }
 
     post {
-        always {
-            node {
-                echo 'Cleaning workspace after build...'
-                deleteDir() // Optional: cleans workspace after build
-            }
-        }
         success {
-            echo 'Build succeeded!'
+            echo 'Pipeline completed successfully!'
         }
         failure {
-            echo 'Build failed!'
+            echo 'Pipeline failed.'
         }
     }
 }
