@@ -1,43 +1,68 @@
 pipeline {
     agent any
 
-    tools {
-        nodejs "NodeJS"  
+    environment {
+        NODE_HOME = "C:\\Program Files\\nodejs" // Update if your Node.js path is different
+        PATH = "${env.NODE_HOME};${env.PATH}"
     }
 
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main',
-                    url: 'https://github.com/AryaBhatt05/react-selenium-test.git'
+                node {
+                    checkout scm
+                }
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                powershell 'npm install'
+                node {
+                    // Clean npm cache just in case
+                    bat 'npm cache clean --force'
+                    bat 'npm install'
+                }
             }
         }
 
-        stage('Start React App') {
+        stage('Build Project') {
             steps {
-                powershell '''
-                Start-Process npm -ArgumentList "start" -NoNewWindow
-                npx wait-on http://localhost:3000
-                '''
+                node {
+                    bat 'npm run build'
+                }
             }
         }
 
-        stage('Run E2E Tests') {
+        stage('Run Selenium Tests') {
             steps {
-                powershell 'npm run e2e'
+                node {
+                    bat 'npm test' // Assuming you have a test script in package.json
+                }
+            }
+        }
+
+        stage('Publish Test Results') {
+            steps {
+                node {
+                    // Adjust the path if your test results are elsewhere
+                    junit '**/test-results/*.xml'
+                }
             }
         }
     }
 
     post {
         always {
-            junit 'reports/junit-e2e.xml'
+            node {
+                echo 'Cleaning workspace after build...'
+                deleteDir() // Optional: cleans workspace after build
+            }
+        }
+        success {
+            echo 'Build succeeded!'
+        }
+        failure {
+            echo 'Build failed!'
         }
     }
 }

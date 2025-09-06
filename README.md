@@ -25,8 +25,12 @@ react-selenium-test/
 git clone https://github.com/AryaBhatt05/react-selenium-test.git
 cd react-selenium-test
 
+2. Install dependencies:
+```bash
 npm install
 
+3. Run tests locally:
+```bash
 npm start       # Start React app
 npx wait-on http://localhost:3000 && npm run e2e
 
