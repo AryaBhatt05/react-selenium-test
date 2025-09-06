@@ -20,8 +20,9 @@ react-selenium-test/
 
 ## Setup & Run
 
-1. Clone the repo:
+
 ```bash
+1. Clone the repo:
 git clone https://github.com/AryaBhatt05/react-selenium-test.git
 cd react-selenium-test
 

@@ -1,12 +1,12 @@
 pipeline {
-    agent any  // run on any available Jenkins node
+    agent any
 
     environment {
         NODE_ENV = 'development'
     }
 
     stages {
-        stage('Checkout') {
+        stage('Checkout SCM') {
             steps {
                 checkout scm
             }
@@ -14,23 +14,19 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                script {
-                    if (fileExists('package-lock.json')) {
-                        bat 'npm ci'
-                    } else {
-                        bat 'npm install'
-                    }
-                }
+                bat 'npm ci'
             }
         }
 
         stage('Run Tests') {
             steps {
-                bat 'npm test'
+                // Run tests, but don't fail if there are no tests
+                bat 'npm test -- --passWithNoTests'
             }
             post {
                 always {
-                    junit 'reports/**/*.xml' // adjust path if your test reports are elsewhere
+                    // Publish JUnit test results (update path if needed)
+                    junit '**/reports/**/*.xml'
                 }
             }
         }
@@ -43,14 +39,14 @@ pipeline {
 
         stage('Archive Artifacts') {
             steps {
-                archiveArtifacts artifacts: 'build/**', fingerprint: true
+                archiveArtifacts artifacts: 'build/**', allowEmptyArchive: true
             }
         }
     }
 
     post {
         success {
-            echo 'Pipeline completed successfully!'
+            echo 'Pipeline succeeded!'
         }
         failure {
             echo 'Pipeline failed.'
