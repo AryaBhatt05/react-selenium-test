@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="1.941" tests="1" failures="0">
+  <testsuite name="Root Suite" timestamp="2025-09-06T12:59:43" tests="0" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="React App E2E" timestamp="2025-09-06T12:59:43" tests="1" file="C:\Users\aryab\MCA\SEM 3\DevOps\Exp4\react-selenium-test\e2e\test_app.js" time="1.938" failures="0">
+    <testcase name="React App E2E shows the app title" time="0.008" classname="shows the app title">
+    </testcase>
+  </testsuite>
+</testsuites>

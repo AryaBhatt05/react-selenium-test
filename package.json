@@ -16,7 +16,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "test:unit:ci": "CI=true react-scripts test --coverage --watchAll=false",
+    "e2e": "mocha e2e --reporter mocha-junit-reporter --reporter-options mochaFile=reports/junit-e2e.xml"
   },
   "eslintConfig": {
     "extends": [
@@ -35,5 +37,13 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "chai": "^6.0.1",
+    "chromedriver": "^139.0.3",
+    "mocha": "^11.7.2",
+    "mocha-junit-reporter": "^2.2.1",
+    "selenium-webdriver": "^4.35.0",
+    "wait-on": "^8.0.4"
   }
 }
